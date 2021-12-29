@@ -10,12 +10,13 @@ public class Boarding_Pass {
 
     Boarding_Pass(){}
 
-    Boarding_Pass(String boardingPassNumber, Calendar date, Calendar departureTime, String origin ,String destination){
+    Boarding_Pass(String boardingPassNumber, Calendar date, Calendar departureTime, String origin, String destination){
         this.boardingPassNumber = boardingPassNumber;
         this.date = date;
         this.departureTime = departureTime;
         this.origin = origin;
         this.destination = destination;
+        calcEta(origin,destination,departureTime);
     }
 
     //Setters
@@ -70,8 +71,13 @@ public class Boarding_Pass {
     }
 
     //Methods
+    public Calendar calcEta(){
+        //TODO calculate the ETA from distances. The origin,destination, and departureTime can not be null.
+        return this.getEta();
+    }
+
     public Calendar calcEta(String origin, String destination, Calendar departureTime){
         //TODO create a list of origins and destinations to have set distances between airports.
-        return null;
+        return this.getEta();
     }
 }

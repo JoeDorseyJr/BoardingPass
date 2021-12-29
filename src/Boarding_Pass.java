@@ -24,11 +24,15 @@ public class Boarding_Pass {
         this.boardingPassNumber = boardingPassNumber;
     }
 
-    public void setDate(Calendar date){
+    public void setDate(int year, int month, int day) {
+        Calendar date = null;
+        date.set(year,month,day);
         this.date = date;
     }
 
-    public void setDepartureTime(Calendar departureTime) {
+    public void setDepartureTime(int year, int month, int date, int hourOfDay, int minute) {
+        Calendar departureTime = null;
+        departureTime.set(year,month,date,hourOfDay,minute);
         this.departureTime = departureTime;
     }
 
@@ -45,7 +49,6 @@ public class Boarding_Pass {
     }
 
     //Getters
-
     public Calendar getDate() {
         return this.date;
     }

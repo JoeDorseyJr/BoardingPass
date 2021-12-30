@@ -17,6 +17,7 @@ public class Boarding_Pass {
         this.origin = origin;
         this.destination = destination;
         calcEta(origin,destination,departureTime);
+        storeData();
     }
 
     //Setters
@@ -82,5 +83,9 @@ public class Boarding_Pass {
     public Calendar calcEta(String origin, String destination, Calendar departureTime){
         //TODO create a list of origins and destinations to have set distances between airports.
         return this.getEta();
+    }
+
+    public void storeData(){
+        //TODO output the data from the instance to a csv file.
     }
 }

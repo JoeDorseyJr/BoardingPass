@@ -3,5 +3,4 @@
 /workspace.xml
 *iml
 out/*
-src/Key.java
-.env/*
+*env/

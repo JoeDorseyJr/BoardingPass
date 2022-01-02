@@ -10,9 +10,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 
 public class AirportData implements AccessKeys {
+    public HashMap<String,JSONObject> airport = new HashMap<>();
+    public List<JSONObject> airportResults = new ArrayList<>();
 
     public AirportData(String location) throws IOException {
 
@@ -55,10 +59,21 @@ public class AirportData implements AccessKeys {
         JSONObject response = (JSONObject) parse.parse(responseBody);
         JSONArray airports = (JSONArray) response.get("airports");
 
+       airports.stream()
+               .map(x -> x.toString())
+               .forEach(n -> {
+                   try {
+                      airportResults.add((JSONObject) parse.parse((String) n));
+                   } catch (ParseException e) {
+                       e.printStackTrace();
+                   }
+               });
 
-        System.out.println(response.toJSONString());
-        airports.stream()
-                .map(x -> x.toString())
-                .forEach(System.out::println);
+       airportResults.forEach(x -> airport.put((String) x.get("iata"), x));
+
+       airport.forEach((k,v) -> System.out.println(k+" = "+v.toString()+"\n"));
+
     }
+
+
 }

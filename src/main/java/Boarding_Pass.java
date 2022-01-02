@@ -1,19 +1,19 @@
 import org.json.simple.JSONObject;
 
-import java.util.Calendar;
+import java.time.*;
 
 public class Boarding_Pass {
     private String boardingPassNumber;
-    private Calendar date;
-    private Calendar departureTime;
+    private LocalDate date = LocalDate.now();
+    private LocalDateTime departureTime;
     private JSONObject origin;
     private JSONObject destination;
-    private Calendar eta;
+    private LocalTime eta;
     private double distance;
 
     Boarding_Pass(){}
 
-    Boarding_Pass(String boardingPassNumber, Calendar date, Calendar departureTime, JSONObject origin, JSONObject destination){
+    Boarding_Pass(String boardingPassNumber, LocalDate date, LocalDateTime departureTime, JSONObject origin, JSONObject destination){
         this.boardingPassNumber = boardingPassNumber;
         this.date = date;
         this.departureTime = departureTime;
@@ -29,24 +29,19 @@ public class Boarding_Pass {
         this.boardingPassNumber = boardingPassNumber;
     }
 
-    public void setDate(int year, int month, int day) {
-        Calendar date = null;
-        date.set(year,month,day);
-        this.date = date;
+    public void setDate(int year, int month, int dayOfMonth) {
+        this.date = LocalDate.of(year,month,dayOfMonth);
     }
 
-    public void setDepartureTime(int year, int month, int date, int hourOfDay, int minute) {
-        Calendar departureTime = null;
-        assert false;
-        departureTime.set(year,month,date,hourOfDay,minute);
-        this.departureTime = departureTime;
+    public void setDepartureTime(int year, int month, int dayOfMonth, int hourOfDay, int minute) {
+        this.departureTime = LocalDateTime.of(LocalDate.of(year ,month,dayOfMonth),LocalTime.of(hourOfDay,minute));
     }
 
     public void setDestination(JSONObject destination) {
         this.destination = destination;
     }
 
-    public void setEta(Calendar eta) {
+    public void setEta(LocalTime eta) {
         this.eta = eta;
     }
 
@@ -55,15 +50,15 @@ public class Boarding_Pass {
     }
 
     //Getters
-    public Calendar getDate() {
+    public LocalDate getDate() {
         return this.date;
     }
 
-    public Calendar getDepartureTime() {
+    public LocalDateTime getDepartureTime() {
         return this.departureTime;
     }
 
-    public Calendar getEta() {
+    public LocalTime getEta() {
         return this.eta;
     }
 
@@ -79,6 +74,10 @@ public class Boarding_Pass {
         return this.origin;
     }
 
+    public double getDistance() {
+        return this.distance;
+    }
+
     /* ASSUMPTIONS: There are few assumptions made to complete the next few calculations.
    1. Every plane is a Boeing 747 because it's one of the most sold planes in the world.
    2. Every flight is full so the fuel efficiency will be calculated accordingly. (To determine price possibly)
@@ -87,12 +86,12 @@ public class Boarding_Pass {
     */
 
     //Methods
-    public Calendar calcEta(){
+    public LocalTime calcEta(){
         //TODO calculate the ETA from distances. The origin,destination, and departureTime can not be null.
         return this.getEta();
     }
 
-    public Calendar calcEta(JSONObject origin, JSONObject destination, Calendar departureTime){
+    public LocalTime calcEta(JSONObject origin, JSONObject destination, LocalDateTime departureTime){
         //TODO create a list of origins and destinations to have set distances between airports.
         return this.getEta();
     }

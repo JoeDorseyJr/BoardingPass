@@ -6,7 +6,7 @@ public class Passenger {
     private int age;
     private double discount = 0.0;
 
-//Setters
+    // Setters
     public void setName(String name) {
         this.name = name;
     }
@@ -29,21 +29,21 @@ public class Passenger {
         this.setDiscount(age);
     }
 
-    public void setDiscount(int age){
-        if (age <= 12){
+    public void setDiscount(int age) {
+        if (age <= 12) {
             this.discount += .5;
         } else if (age >= 60) {
             this.discount += .6;
         }
     }
 
-    public void setDiscount(String gender){
-        if (gender.equals("female")){
+    public void setDiscount(String gender) {
+        if (gender.equals("female")) {
             this.discount += .25;
         }
     }
 
-//Getters
+    // Getters
     public String getName() {
         return this.name;
     }
@@ -64,7 +64,7 @@ public class Passenger {
         return this.age;
     }
 
-    public double getDiscount(){
+    public double getDiscount() {
         return this.discount;
     }
 }

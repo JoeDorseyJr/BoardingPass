@@ -1,9 +1,12 @@
-import org.json.simple.JSONObject;
-
 import java.io.IOException;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
 import java.util.Date;
 import java.util.Scanner;
+
+import org.json.simple.JSONObject;
 
 public class Boarding_Pass {
     private String boardingPassNumber;
@@ -13,11 +16,11 @@ public class Boarding_Pass {
     private LocalTime eta;
     private double distance;
 
-    Boarding_Pass(){
+    Boarding_Pass() {
         init();
     }
 
-    Boarding_Pass(LocalDateTime departureTime, JSONObject origin, JSONObject destination){
+    Boarding_Pass(LocalDateTime departureTime, JSONObject origin, JSONObject destination) {
         this.setBoardingPassNumber(createBoardingPassNumber());
         this.departureTime = departureTime;
         this.origin = origin;
@@ -27,19 +30,21 @@ public class Boarding_Pass {
         storeData();
     }
 
-    //Setters
-    public void setBoardingPassNumber(String boardingPassNumber){
+    // Setters
+    public void setBoardingPassNumber(String boardingPassNumber) {
         this.boardingPassNumber = boardingPassNumber;
     }
 
     public void setDepartureTime(int year, int month, int dayOfMonth, int hourOfDay, int minute) {
-        this.departureTime = LocalDateTime.of(LocalDate.of(year,month,dayOfMonth),LocalTime.of(hourOfDay,minute));
+        this.departureTime = LocalDateTime.of(LocalDate.of(year, month, dayOfMonth), LocalTime.of(hourOfDay, minute));
     }
+
     public void setDepartureTime() {
-        /*TODO Methods for Natural Language input for Date and Time
-        * 1. Create a method for date MM/DD/YEAR
-        * 2. Create a method for Time N:NN -> AM || PM
-        * */
+        /*
+         * TODO Methods for Natural Language input for Date and Time
+         * 1. Create a method for date MM/DD/YEAR
+         * 2. Create a method for Time N:NN -> AM || PM
+         */
 
         System.out.println("Year: ");
         int year = Integer.parseInt(userInput());
@@ -58,15 +63,15 @@ public class Boarding_Pass {
         int min = Integer.parseInt(userInput());
         int minute = getMinute(min);
 
-        this.setDepartureTime(year,month,dayOfMonth,hourOfDay,minute);
+        this.setDepartureTime(year, month, dayOfMonth, hourOfDay, minute);
     }
 
     private int getMinute(int min) {// flights in 15 min increments
-        if (min>45) {
+        if (min > 45) {
             return 60;
-        } else if (min > 30){
+        } else if (min > 30) {
             return 45;
-        } else if (min > 15){
+        } else if (min > 15) {
             return 30;
         }
         return 15;
@@ -91,7 +96,6 @@ public class Boarding_Pass {
         this.setDestination(apd.choice());
     }
 
-
     public void setEta(LocalTime eta) {
         this.eta = eta;
     }
@@ -115,7 +119,7 @@ public class Boarding_Pass {
         this.setOrigin(apd.choice());
     }
 
-    //Getters
+    // Getters
     public LocalDateTime getDepartureTime() {
         return this.departureTime;
     }
@@ -140,15 +144,20 @@ public class Boarding_Pass {
         return this.distance;
     }
 
-    /* ASSUMPTIONS: There are few assumptions made to complete the next few calculations.
-   1. Every plane is a Boeing 747 because it's one of the most sold planes in the world.
-   2. Every flight is full so the fuel efficiency will be calculated accordingly. (To determine price possibly)
-   3. A 747 transporting 500 people one-mile uses five gallons of fuel. That means the plane is burning 0.01 gallons per person per mile.
-   4. The plane travels at 550 mph (900 km/h).
-    */
+    /*
+     * ASSUMPTIONS: There are few assumptions made to complete the next few
+     * calculations.
+     * 1. Every plane is a Boeing 747 because it's one of the most sold planes in
+     * the world.
+     * 2. Every flight is full so the fuel efficiency will be calculated
+     * accordingly. (To determine price possibly)
+     * 3. A 747 transporting 500 people one-mile uses five gallons of fuel. That
+     * means the plane is burning 0.01 gallons per person per mile.
+     * 4. The plane travels at 550 mph (900 km/h).
+     */
 
-    //Methods
-    private void init(){
+    // Methods
+    private void init() {
         this.setBoardingPassNumber(createBoardingPassNumber());
         this.setOrigin();
         this.setDestination();
@@ -157,12 +166,13 @@ public class Boarding_Pass {
     }
 
     public LocalTime calcEta() {
-        //TODO calculate the ETA from distances. The origin,destination, and departureTime.
+        // TODO calculate the ETA from distances. The origin,destination, and
+        // departureTime.
         return this.getEta();
     }
 
     public void storeData() {
-        //TODO output the data from the instance to a csv file.
+        // TODO output the data from the instance to a csv file.
     }
 
     private void calculateDistance() {
@@ -172,7 +182,7 @@ public class Boarding_Pass {
         double lon2 = Double.parseDouble((String) this.destination.get("longitude"));
         double earthRadius = 3963.0;// Miles
 
-        this.distance = earthRadius * Math.acos( //convert coordinates to distances
+        this.distance = earthRadius * Math.acos( // convert coordinates to distances
                 Math.cos(Math.toRadians(lat1)) *
                 Math.cos(Math.toRadians(lon1)) *
                 Math.cos(Math.toRadians(lat2)) *
@@ -187,21 +197,22 @@ public class Boarding_Pass {
                 Math.sin(Math.toRadians(lat2)) );
     }
 
-    public String createBoardingPassNumber(){
-        //Take the current time from Date Class (nanoseconds) and convert it to Hexadecimal
+    public String createBoardingPassNumber() {
+        // Take the current time from Date Class (nanoseconds) and convert it to
+        // Hexadecimal
         StringBuilder passNumber = new StringBuilder();
         long remainder;
         Date pass = new Date();
         long numToConvert = pass.getTime();
-        char[] hex = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+        char[] hex = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
         int dash = 0;
-        while (numToConvert > 0){
+        while (numToConvert > 0) {
             remainder = numToConvert % 16;
             passNumber.append(hex[(int) remainder]);
             numToConvert /= 16;
             dash++;
-            if (dash%4 == 0){
+            if (dash % 4 == 0) {
                 passNumber.append("-");
             }
         }
@@ -210,15 +221,16 @@ public class Boarding_Pass {
         return passNumber.toString();
     }
 
-    private int getDay(int month, int day){
-        if(day <= Month.of(month).length(false)){
+    private int getDay(int month, int day) {
+        if (day <= Month.of(month).length(false)) {
             return day;
         }
         return 0;
     }
 
-    private String userInput(){
-        Scanner input = new Scanner(System.in);
-        return input.nextLine();
+    private String userInput() {
+        try (Scanner input = new Scanner(System.in)) {
+            return input.nextLine();
+        }
     }
 }

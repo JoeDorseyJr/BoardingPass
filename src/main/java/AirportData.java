@@ -1,26 +1,30 @@
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Scanner;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class AirportData implements AccessKeys {
 
-    public HashMap<String,JSONObject> airport = new HashMap<>();
+    public HashMap<String, JSONObject> airport = new HashMap<>();
     public List<JSONObject> airportResults = new ArrayList<>();
 
     public AirportData(String location) throws IOException {
 
-        location = cleanseLocation(location);//removes any Non-letters and replaces spaces with %20
+        location = cleanseLocation(location);// removes any Non-letters and replaces spaces with %20
 
-        URL url = new URL("https://www.air-port-codes.com/api/v1/multi?term="+location+"&limit=5&size=3&countries=US");
+        URL url = new URL(
+                "https://www.air-port-codes.com/api/v1/multi?term=" + location + "&limit=5&size=3&countries=US");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Content-Type", "application/json");
@@ -40,45 +44,46 @@ public class AirportData implements AccessKeys {
 
         try {
             parseJSON(sb.toString());
-        } catch (ParseException e){
+        } catch (ParseException e) {
             e.printStackTrace();
         }
-        /*TODO Write Method to handle each code from API.
-        1. 200 - Success
-        2. 204 - No Content
-        3. 400 - Bad Request
-        4. 401 - Unauthorized
-        5. 404 - Not Found...
-        */
+        /*
+         * TODO Write Methods to handle each code from API.
+         * 1. 200 - Success
+         * 2. 204 - No Content
+         * 3. 400 - Bad Request
+         * 4. 401 - Unauthorized
+         * 5. 404 - Not Found...
+         */
     }
 
-    String cleanseLocation(String location){
-        location = location.replace(" ","-");
+    String cleanseLocation(String location) {
+        location = location.replace(" ", "-");
         ArrayList<String> strList = new ArrayList<>(Arrays.asList(location.split("[^a-zA-Z-]+")));
         String result = String.join("", strList);
-        return result.replace("-","%20");
+        return result.replace("-", "%20");
     }
 
-    void parseJSON (String responseBody) throws ParseException {
+    void parseJSON(String responseBody) throws ParseException {
         JSONParser parse = new JSONParser();
         JSONObject response = (JSONObject) parse.parse(responseBody);
         JSONArray airports = (JSONArray) response.get("airports");
 
-       airports.stream()
-               .map(x -> x.toString())
-               .forEach(n -> {
-                   try {
-                      airportResults.add((JSONObject) parse.parse((String) n));
-                   } catch (ParseException e) {
-                       e.printStackTrace();
-                   }
-               });
+        airports.stream()
+                .map(Object::toString)
+                .forEach(n -> {
+                    try {
+                        airportResults.add((JSONObject) parse.parse((String) n));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                });
 
-       airportResults.forEach(x -> airport.put((String) x.get("iata"), x));
+        airportResults.forEach(x -> airport.put((String) x.get("iata"), x));
 
     }
 
-    public JSONObject choice(){
+    public JSONObject choice() {
         String name;
 
         do {
@@ -90,7 +95,7 @@ public class AirportData implements AccessKeys {
         return airport.get(name);
     }
 
-    private String userInput(){
+    private String userInput() {
         Scanner input = new Scanner(System.in);
         return input.nextLine().toUpperCase();
     }

@@ -10,6 +10,5 @@ public class Ticket {
 
     Ticket() throws IOException {
         new Boarding_Pass();
-
     }
 }

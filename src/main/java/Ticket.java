@@ -9,6 +9,7 @@ public class Ticket {
     //TODO output a ticket price.
 
     Ticket() throws IOException {
-        new AirportData("New York");
+        new Boarding_Pass();
+
     }
 }

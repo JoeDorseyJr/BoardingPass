@@ -14,9 +14,7 @@ public class Boarding_Pass {
     private double distance;
 
     Boarding_Pass(){
-
         init();
-
     }
 
     Boarding_Pass(LocalDateTime departureTime, JSONObject origin, JSONObject destination){
@@ -38,15 +36,25 @@ public class Boarding_Pass {
         this.departureTime = LocalDateTime.of(LocalDate.of(year,month,dayOfMonth),LocalTime.of(hourOfDay,minute));
     }
     public void setDepartureTime() {
+        /*TODO Methods for Natural Language input for Date and Time
+        * 1. Create a method for date MM/DD/YEAR
+        * 2. Create a method for Time N:NN -> AM || PM
+        * */
+
+        System.out.println("Year: ");
         int year = Integer.parseInt(userInput());
+        System.out.println("Month: ");
         int month = Integer.parseInt(userInput());
         int dayOfMonth = 0;
         do {
+            System.out.println("Day: ");
             int day = Integer.parseInt(userInput());
             dayOfMonth = getDay(month, day);
             System.out.println("YUP");
         } while (dayOfMonth == 0);
+        System.out.println("Hour: ");
         int hourOfDay = Integer.parseInt(userInput());
+        System.out.println("Minute: ");
         int min = Integer.parseInt(userInput());
         int minute = getMinute(min);
 
@@ -187,10 +195,15 @@ public class Boarding_Pass {
         long numToConvert = pass.getTime();
         char[] hex = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
+        int dash = 0;
         while (numToConvert > 0){
             remainder = numToConvert % 16;
             passNumber.append(hex[(int) remainder]);
             numToConvert /= 16;
+            dash++;
+            if (dash%4 == 0){
+                passNumber.append("-");
+            }
         }
 
         System.out.println(passNumber);
@@ -198,7 +211,7 @@ public class Boarding_Pass {
     }
 
     private int getDay(int month, int day){
-        if(day >= Month.of(month).length(false)){
+        if(day <= Month.of(month).length(false)){
             return day;
         }
         return 0;

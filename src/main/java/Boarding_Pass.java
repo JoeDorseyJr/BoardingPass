@@ -1,6 +1,9 @@
 import org.json.simple.JSONObject;
 
+import java.io.IOException;
 import java.time.*;
+import java.util.Date;
+import java.util.Scanner;
 
 public class Boarding_Pass {
     private String boardingPassNumber;
@@ -11,16 +14,20 @@ public class Boarding_Pass {
     private LocalTime eta;
     private double distance;
 
-    Boarding_Pass(){}
+    Boarding_Pass(){
 
-    Boarding_Pass(String boardingPassNumber, LocalDate date, LocalDateTime departureTime, JSONObject origin, JSONObject destination){
-        this.boardingPassNumber = boardingPassNumber;
+        init();
+
+    }
+
+    Boarding_Pass(LocalDate date, LocalDateTime departureTime, JSONObject origin, JSONObject destination){
+        this.setBoardingPassNumber(createBoardingPassNumber());
         this.date = date;
         this.departureTime = departureTime;
         this.origin = origin;
         this.destination = destination;
         calculateDistance();
-        calcEta(origin,destination,departureTime);
+        calcEta();
         storeData();
     }
 
@@ -40,6 +47,22 @@ public class Boarding_Pass {
     public void setDestination(JSONObject destination) {
         this.destination = destination;
     }
+
+    public void setDestination() {
+        System.out.println("Destination(State): ");
+        String state = userInput();
+
+        AirportData apd = null;
+        try {
+            apd = new AirportData(state);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        assert apd != null;
+        this.destination = apd.choice();
+    }
+
 
     public void setEta(LocalTime eta) {
         this.eta = eta;
@@ -86,21 +109,16 @@ public class Boarding_Pass {
     */
 
     //Methods
-    public LocalTime calcEta(){
-        //TODO calculate the ETA from distances. The origin,destination, and departureTime can not be null.
+    public LocalTime calcEta() {
+        //TODO calculate the ETA from distances. The origin,destination, and departureTime.
         return this.getEta();
     }
 
-    public LocalTime calcEta(JSONObject origin, JSONObject destination, LocalDateTime departureTime){
-        //TODO create a list of origins and destinations to have set distances between airports.
-        return this.getEta();
-    }
-
-    public void storeData(){
+    public void storeData() {
         //TODO output the data from the instance to a csv file.
     }
 
-    private void calculateDistance(){
+    private void calculateDistance() {
         double lat1 = Double.parseDouble((String) this.origin.get("latitude"));
         double lat2 = Double.parseDouble((String) this.destination.get("latitude"));
         double lon1 = Double.parseDouble((String) this.origin.get("longitude"));
@@ -120,6 +138,35 @@ public class Boarding_Pass {
                 +
                 Math.sin(Math.toRadians(lat1)) *
                 Math.sin(Math.toRadians(lat2)) );
+    }
+
+    public String createBoardingPassNumber(){
+        //Take the current time from Date Class (nanoseconds) and convert it to Hexadecimal
+        StringBuilder passNumber = new StringBuilder();
+        long remainder;
+        Date pass = new Date();
+        long numToConvert = pass.getTime();
+        char[] hex = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+
+        while (numToConvert > 0){
+            remainder = numToConvert % 16;
+            passNumber.append(hex[(int) remainder]);
+            numToConvert /= 16;
+        }
+
+        System.out.println(passNumber);
+        return passNumber.toString();
+    }
+
+    private void init(){
+        this.setBoardingPassNumber(createBoardingPassNumber());
+        this.setDestination();
+
+    }
+
+    private String userInput(){
+        Scanner input = new Scanner(System.in);
+        return input.nextLine();
     }
 
 }

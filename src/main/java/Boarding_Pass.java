@@ -7,7 +7,6 @@ import java.util.Scanner;
 
 public class Boarding_Pass {
     private String boardingPassNumber;
-    private LocalDate date = LocalDate.now();
     private LocalDateTime departureTime;
     private JSONObject origin;
     private JSONObject destination;
@@ -20,9 +19,8 @@ public class Boarding_Pass {
 
     }
 
-    Boarding_Pass(LocalDate date, LocalDateTime departureTime, JSONObject origin, JSONObject destination){
+    Boarding_Pass(LocalDateTime departureTime, JSONObject origin, JSONObject destination){
         this.setBoardingPassNumber(createBoardingPassNumber());
-        this.date = date;
         this.departureTime = departureTime;
         this.origin = origin;
         this.destination = destination;
@@ -36,12 +34,34 @@ public class Boarding_Pass {
         this.boardingPassNumber = boardingPassNumber;
     }
 
-    public void setDate(int year, int month, int dayOfMonth) {
-        this.date = LocalDate.of(year,month,dayOfMonth);
+    public void setDepartureTime(int year, int month, int dayOfMonth, int hourOfDay, int minute) {
+        this.departureTime = LocalDateTime.of(LocalDate.of(year,month,dayOfMonth),LocalTime.of(hourOfDay,minute));
+    }
+    public void setDepartureTime() {
+        int year = Integer.parseInt(userInput());
+        int month = Integer.parseInt(userInput());
+        int dayOfMonth = 0;
+        do {
+            int day = Integer.parseInt(userInput());
+            dayOfMonth = getDay(month, day);
+            System.out.println("YUP");
+        } while (dayOfMonth == 0);
+        int hourOfDay = Integer.parseInt(userInput());
+        int min = Integer.parseInt(userInput());
+        int minute = getMinute(min);
+
+        this.setDepartureTime(year,month,dayOfMonth,hourOfDay,minute);
     }
 
-    public void setDepartureTime(int year, int month, int dayOfMonth, int hourOfDay, int minute) {
-        this.departureTime = LocalDateTime.of(LocalDate.of(year ,month,dayOfMonth),LocalTime.of(hourOfDay,minute));
+    private int getMinute(int min) {// flights in 15 min increments
+        if (min>45) {
+            return 60;
+        } else if (min > 30){
+            return 45;
+        } else if (min > 15){
+            return 30;
+        }
+        return 15;
     }
 
     public void setDestination(JSONObject destination) {
@@ -60,7 +80,7 @@ public class Boarding_Pass {
         }
 
         assert apd != null;
-        this.destination = apd.choice();
+        this.setDestination(apd.choice());
     }
 
 
@@ -72,11 +92,22 @@ public class Boarding_Pass {
         this.origin = origin;
     }
 
-    //Getters
-    public LocalDate getDate() {
-        return this.date;
+    public void setOrigin() {
+        System.out.println("Origin (State): ");
+        String state = userInput();
+
+        AirportData apd = null;
+        try {
+            apd = new AirportData(state);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        assert apd != null;
+        this.setOrigin(apd.choice());
     }
 
+    //Getters
     public LocalDateTime getDepartureTime() {
         return this.departureTime;
     }
@@ -109,6 +140,14 @@ public class Boarding_Pass {
     */
 
     //Methods
+    private void init(){
+        this.setBoardingPassNumber(createBoardingPassNumber());
+        this.setOrigin();
+        this.setDestination();
+        this.setDepartureTime();
+
+    }
+
     public LocalTime calcEta() {
         //TODO calculate the ETA from distances. The origin,destination, and departureTime.
         return this.getEta();
@@ -158,15 +197,15 @@ public class Boarding_Pass {
         return passNumber.toString();
     }
 
-    private void init(){
-        this.setBoardingPassNumber(createBoardingPassNumber());
-        this.setDestination();
-
+    private int getDay(int month, int day){
+        if(day >= Month.of(month).length(false)){
+            return day;
+        }
+        return 0;
     }
 
     private String userInput(){
         Scanner input = new Scanner(System.in);
         return input.nextLine();
     }
-
 }

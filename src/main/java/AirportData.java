@@ -8,13 +8,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 
 public class AirportData implements AccessKeys {
+
     public HashMap<String,JSONObject> airport = new HashMap<>();
     public List<JSONObject> airportResults = new ArrayList<>();
 
@@ -45,6 +43,13 @@ public class AirportData implements AccessKeys {
         } catch (ParseException e){
             e.printStackTrace();
         }
+        /*TODO Write Method to handle each code from API.
+        1. 200 - Success
+        2. 204 - No Content
+        3. 400 - Bad Request
+        4. 401 - Unauthorized
+        5. 404 - Not Found...
+        */
     }
 
     String cleanseLocation(String location){
@@ -71,9 +76,23 @@ public class AirportData implements AccessKeys {
 
        airportResults.forEach(x -> airport.put((String) x.get("iata"), x));
 
-       airport.forEach((k,v) -> System.out.println(k+" = "+v.toString()+"\n"));
-
     }
 
+    public JSONObject choice(){
+        String name;
+
+        do {
+            System.out.println("\nChoose An Airport (Airport Code): ");
+            airport.forEach((k, v) -> System.out.println(k + " - " + v.get("name").toString()));
+            name = userInput();
+        } while (!airport.containsKey(name));
+
+        return airport.get(name);
+    }
+
+    private String userInput(){
+        Scanner input = new Scanner(System.in);
+        return input.nextLine().toUpperCase();
+    }
 
 }

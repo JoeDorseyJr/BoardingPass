@@ -6,6 +6,8 @@ public class Passenger {
     private int age;
     private double discount = 0.0;
 
+    // TODO 1. Create a Constructor that take in user's info.
+
     // Setters
     public void setName(String name) {
         this.name = name;
@@ -67,4 +69,8 @@ public class Passenger {
     public double getDiscount() {
         return this.discount;
     }
+    /* Methods to Create
+    * TODO 2. Create a method that outputs gender (Switch) Statement.
+    * TODO 3. Create a method that stores the user data to a file.
+    * */
 }

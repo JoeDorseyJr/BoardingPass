@@ -41,9 +41,9 @@ public class Boarding_Pass {
 
     public void setDepartureTime() {
         /*
-         * TODO Methods for Natural Language input for Date and Time
-         * 1. Create a method for date MM/DD/YEAR
-         * 2. Create a method for Time N:NN -> AM || PM
+         * Create Methods for Natural Language input for Date and Time
+         * TODO 1. Create a method for date MM/DD/YEAR
+         * TODO 2. Create a method for Time N:NN -> AM || PM
          */
 
         System.out.println("Year: ");
@@ -166,13 +166,13 @@ public class Boarding_Pass {
     }
 
     public LocalTime calcEta() {
-        // TODO calculate the ETA from distances. The origin,destination, and
+        // TODO 3. calculate the ETA from distances. The origin,destination, and
         // departureTime.
         return this.getEta();
     }
 
     public void storeData() {
-        // TODO output the data from the instance to a csv file.
+        // TODO 4. output the data from the instance to a csv file.
     }
 
     private void calculateDistance() {

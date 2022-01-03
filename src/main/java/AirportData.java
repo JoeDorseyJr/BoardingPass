@@ -48,12 +48,12 @@ public class AirportData implements AccessKeys {
             e.printStackTrace();
         }
         /*
-         * TODO Write Methods to handle each code from API.
-         * 1. 200 - Success
-         * 2. 204 - No Content
-         * 3. 400 - Bad Request
-         * 4. 401 - Unauthorized
-         * 5. 404 - Not Found...
+         * Write Methods to handle each code from API.
+         * TODO 1. 200 - Success
+         * TODO 2. 204 - No Content
+         * TODO 3. 400 - Bad Request
+         * TODO 4. 401 - Unauthorized
+         * TODO 5. 404 - Not Found...
          */
     }
 

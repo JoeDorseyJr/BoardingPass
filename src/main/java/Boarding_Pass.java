@@ -3,10 +3,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 import org.json.simple.JSONObject;
 
@@ -193,14 +190,13 @@ public class Boarding_Pass {
 
         do {
             try {
-                System.out.println("What Time (HH:MM)? ");
+                System.out.println("\nWhat Time (HH:MM)? ");
                 String in = input.nextLine();
                 String[] value = in.split("[\\D:]+");
                 this.setDepartHour(Integer.parseInt(value[0]));
                 this.setDepartMinute(getMinute(Integer.parseInt(value[1])));
                 if(this.getDepartMonth()<=12){
                     goodTime = true;
-                    System.out.println(this.getDepartHour()+":"+this.getDepartMinute());
                 } else {
                     System.err.println(in);
                 }
@@ -237,7 +233,8 @@ public class Boarding_Pass {
 
     private int getMinute(int min) {// flights in 15 min increments
         if (min > 45) {
-            return 60;
+            this.departHour +=1;
+            return 00;
         } else if (min > 30) {
             return 45;
         } else if (min > 15) {
@@ -287,15 +284,26 @@ public class Boarding_Pass {
         this.setDepartureTime();
         this.calculateDistance();
         this.calcEta();
-        this.dateNF(this.departureDate);
+        System.out.println();
+        this.dateNF(this.departureDate, "Flight");
         this.timeNF(this.departureTime,"Departure");
         this.timeNF(this.eta,"Arrival");
+        Formatter travel = new Formatter();
+        travel.format("%1.1f",this.getDistance());
+        System.out.println("Total Miles: " + travel);
         this.storeData();
     }
 
     public void calcEta() {
-        double timeOfTravel = Math.ceil(this.getDistance()/MPH) ;
-        this.setEta(this.getDepartureTime().plusHours((long) timeOfTravel));
+        double timeOfTravel = this.getDistance()/MPH*60;
+        double mins = timeOfTravel;
+        int hours = 0;
+        while (mins > 60){
+            hours++;
+            mins-= 60;
+        }
+        System.out.println("\nTime in flight: "+ hours +"h "+ (int)Math.round(mins) + "m");
+        this.setEta(this.getDepartureTime().plusMinutes((long) timeOfTravel));
 
     }
 
@@ -348,9 +356,9 @@ public class Boarding_Pass {
         return passNumber.toString();
     }
 
-    public void dateNF(LocalDate date){
+    public void dateNF(LocalDate date, String what){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-        System.out.println("Date: " + formatter.format(date));
+        System.out.println(what+" Date: " + formatter.format(date));
     }
     public void timeNF(LocalTime time, String when) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");

@@ -7,6 +7,8 @@ import java.util.*;
 
 import org.json.simple.JSONObject;
 
+import javax.xml.crypto.Data;
+
 /*
  * ASSUMPTIONS: There are few assumptions made to complete the next few
  * calculations.
@@ -38,11 +40,11 @@ public class Boarding_Pass {
     private int departMinute;
 
     // Constructors
-    Boarding_Pass() {
+    Boarding_Pass() throws IOException {
         init();
     }
 
-    Boarding_Pass(JSONObject origin, JSONObject destination, LocalDate departureDate,LocalTime departureTime) {
+    Boarding_Pass(JSONObject origin, JSONObject destination, LocalDate departureDate,LocalTime departureTime) throws IOException {
         this.setBoardingPassNumber(createBoardingPassNumber());
         this.origin = origin;
         this.destination = destination;
@@ -187,6 +189,7 @@ public class Boarding_Pass {
 
     private void getTime() {
         boolean inputIsGood = false,goodTime = false;
+        int originalHour = 0;
 
         do {
             try {
@@ -194,6 +197,7 @@ public class Boarding_Pass {
                 String in = input.nextLine();
                 String[] value = in.split("[\\D:]+");
                 this.setDepartHour(Integer.parseInt(value[0]));
+                originalHour = Integer.parseInt(value[0]);
                 this.setDepartMinute(getMinute(Integer.parseInt(value[1])));
                 if(this.getDepartMonth()<=12){
                     goodTime = true;
@@ -219,7 +223,7 @@ public class Boarding_Pass {
                         break;
                     case "A":
                     case "AM":
-                        if (this.departHour == 12) {
+                        if (this.departHour == 12 && originalHour != 11) {
                             this.setDepartHour(0);
                         }
                         inputIsGood = true;
@@ -277,7 +281,7 @@ public class Boarding_Pass {
     }
 
     // Methods
-    private void init() {
+    private void init() throws IOException {
         this.setBoardingPassNumber(createBoardingPassNumber());
         this.setOrigin();
         this.setDestination();
@@ -307,8 +311,18 @@ public class Boarding_Pass {
 
     }
 
-    public void storeData() {
-        // TODO 4. output the data from the instance to a csv file.
+    public void storeData() throws IOException {
+        DataStore data = new DataStore();
+        Boolean append = true;
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("hh:mm a");
+        data.writeToAFile("BoardingPass.txt","Boarding Pass Number",this.boardingPassNumber,!append);
+        data.writeToAFile("BoardingPass.txt","Departure Date", this.departureDate.format(dateFormat),append);
+        data.writeToAFile("BoardingPass.txt","Departure Time", this.getDepartureTime().format(timeFormat),append);
+        data.writeToAFile("BoardingPass.txt","Arrival Time", this.getEta().format(timeFormat),append);
+        data.writeToAFile("BoardingPass.txt","Origin", this.origin.get("iata").toString()+ " - " + this.origin.get("name").toString(),append);
+        data.writeToAFile("BoardingPass.txt","Destination", this.destination.get("iata").toString()+ " - " + this.destination.get("name").toString(),append);
+
     }
 
     private void calculateDistance() {

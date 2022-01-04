@@ -1,82 +1,103 @@
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Scanner;
 
 import org.json.simple.JSONObject;
 
+/*
+ * ASSUMPTIONS: There are few assumptions made to complete the next few
+ * calculations.
+ * 1. Every plane is a Boeing 747 because it's one of the most sold planes in
+ * the world.
+ * 2. Every flight is full so the fuel efficiency will be calculated
+ * accordingly. (To determine price possibly)
+ * 3. A 747 transporting 500 people one-mile uses five gallons of fuel. That
+ * means the plane is burning 0.01 gallons per person per mile.
+ * 4. The plane travels at 550 mph (900 km/h).
+ */
+
 public class Boarding_Pass {
+
+    // Variables
+    private final double MPH = 550.0;
+    private Scanner input = new Scanner(System.in);
     private String boardingPassNumber;
-    private LocalDateTime departureTime;
+    private LocalTime departureTime;
+    private LocalDate departureDate;
+    private LocalTime eta;
     private JSONObject origin;
     private JSONObject destination;
-    private LocalTime eta;
     private double distance;
-    private Scanner input = new Scanner(System.in);
+    private int departMonth;
+    private int departYear;
+    private int departDay;
+    private int departHour;
+    private int departMinute;
 
+    // Constructors
     Boarding_Pass() {
         init();
     }
 
-    Boarding_Pass(LocalDateTime departureTime, JSONObject origin, JSONObject destination) {
+    Boarding_Pass(JSONObject origin, JSONObject destination, LocalDate departureDate,LocalTime departureTime) {
         this.setBoardingPassNumber(createBoardingPassNumber());
-        this.departureTime = departureTime;
         this.origin = origin;
         this.destination = destination;
-        calculateDistance();
-        calcEta();
-        storeData();
+        this.departureDate = departureDate;
+        this.departureTime = departureTime;
+        this.calculateDistance();
+        this.calcEta();
+        this.storeData();
     }
 
     // Setters
+    public void setDepartMonth(int departMonth) {
+        this.departMonth = departMonth;
+    }
+
+    public void setDepartYear(int departYear) {
+        this.departYear = departYear;
+    }
+
+    public void setDepartDay(int departDay) {
+        this.departDay = departDay;
+    }
+
+    public void setDepartHour(int departHour) {
+        this.departHour = departHour;
+    }
+
+    public void setDepartMinute(int departMinute) {
+        this.departMinute = departMinute;
+    }
+
     public void setBoardingPassNumber(String boardingPassNumber) {
         this.boardingPassNumber = boardingPassNumber;
     }
 
-    public void setDepartureTime(int year, int month, int dayOfMonth, int hourOfDay, int minute) {
-        this.departureTime = LocalDateTime.of(LocalDate.of(year, month, dayOfMonth), LocalTime.of(hourOfDay, minute));
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
+
+    public void setDepartureTime(int hourOfDay, int minute) {
+        this.departureTime = LocalTime.of(hourOfDay, minute);
     }
 
     public void setDepartureTime() {
-
-        /* Create Methods for Natural Language input for Date and Time
-         * TODO 1. Create a method for date MM/DD/YEAR
-         * TODO 2. Create a method for Time N:NN -> AM || PM
-         */
-
-        System.out.println("Year: ");
-        int year = Integer.parseInt(input.nextLine());
-        System.out.println("Month: ");
-        int month = Integer.parseInt(input.nextLine());
-        int dayOfMonth = 0;
-        do {
-            System.out.println("Day: ");
-            int day = Integer.parseInt(input.nextLine());
-            dayOfMonth = getDay(month, day);
-            System.out.println("YUP");
-        } while (dayOfMonth == 0);
-        System.out.println("Hour: ");
-        int hourOfDay = Integer.parseInt(input.nextLine());
-        System.out.println("Minute: ");
-        int min = Integer.parseInt(input.nextLine());
-        int minute = getMinute(min);
-
-        this.setDepartureTime(year, month, dayOfMonth, hourOfDay, minute);
+        this.getDepartureDate();
+        this.getTime();
+        this.setDepartureTime(this.departHour, this.departMinute);
+        this.setDepartureDate(this.departYear, this.departMonth, this.departDay);
     }
 
-    private int getMinute(int min) {// flights in 15 min increments
-        if (min > 45) {
-            return 60;
-        } else if (min > 30) {
-            return 45;
-        } else if (min > 15) {
-            return 30;
-        }
-        return 15;
+    private void setDepartureDate(int departYear, int departMonth, int departDay) {
+        this.departureDate = LocalDate.of(departYear,departMonth,departDay);
     }
 
     public void setDestination(JSONObject destination) {
@@ -87,12 +108,11 @@ public class Boarding_Pass {
         AirportData apd = null;
         String state;
         do {
-            System.out.println("Destination(State): ");
+            System.out.println("\nDestination (US): ");
             state = input.nextLine();
             try {
                 apd = new AirportData(state);
             } catch (IOException e) {
-                input.nextLine();
                 e.printStackTrace();
             }
         } while (!Objects.requireNonNull(apd).status);
@@ -111,12 +131,11 @@ public class Boarding_Pass {
         AirportData apd = null;
         String state;
         do {
-            System.out.println("Origin (State): ");
+            System.out.println("\nOrigin (US): ");
             state = input.nextLine();
             try {
                 apd = new AirportData(state);
             } catch (IOException e) {
-                input.nextLine();
                 e.printStackTrace();
             }
         } while (!Objects.requireNonNull(apd).status);
@@ -125,7 +144,7 @@ public class Boarding_Pass {
     }
 
     // Getters
-    public LocalDateTime getDepartureTime() {
+    public LocalTime getDepartureTime() {
         return this.departureTime;
     }
 
@@ -149,17 +168,116 @@ public class Boarding_Pass {
         return this.distance;
     }
 
-    /*
-     * ASSUMPTIONS: There are few assumptions made to complete the next few
-     * calculations.
-     * 1. Every plane is a Boeing 747 because it's one of the most sold planes in
-     * the world.
-     * 2. Every flight is full so the fuel efficiency will be calculated
-     * accordingly. (To determine price possibly)
-     * 3. A 747 transporting 500 people one-mile uses five gallons of fuel. That
-     * means the plane is burning 0.01 gallons per person per mile.
-     * 4. The plane travels at 550 mph (900 km/h).
-     */
+    public int getDepartMonth() {
+        return this.departMonth;
+    }
+
+    public int getDepartYear() {
+        return this.departYear;
+    }
+
+    public int getDepartDay() {
+        return this.departDay;
+    }
+
+    public int getDepartHour() {
+        return this.departHour;
+    }
+
+    public int getDepartMinute() {
+        return this.departMinute;
+    }
+
+    private void getTime() {
+        boolean inputIsGood = false,goodTime = false;
+
+        do {
+            try {
+                System.out.println("What Time (HH:MM)? ");
+                String in = input.nextLine();
+                String[] value = in.split("[\\D:]+");
+                this.setDepartHour(Integer.parseInt(value[0]));
+                this.setDepartMinute(getMinute(Integer.parseInt(value[1])));
+                if(this.getDepartMonth()<=12){
+                    goodTime = true;
+                    System.out.println(this.getDepartHour()+":"+this.getDepartMinute());
+                } else {
+                    System.err.println(in);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } while (!goodTime);
+
+        do {
+            try {
+                System.out.println("AM or PM: ");
+                String value = input.nextLine().toUpperCase();
+                switch (value) {
+                    case "P":
+                    case "PM":
+                        if (this.getDepartHour() < 12) {
+                            this.departHour += 12;
+                        }
+                        inputIsGood = true;
+                        break;
+                    case "A":
+                    case "AM":
+                        if (this.departHour == 12) {
+                            this.setDepartHour(0);
+                        }
+                        inputIsGood = true;
+                        break;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } while (!inputIsGood);
+    }
+
+    private int getMinute(int min) {// flights in 15 min increments
+        if (min > 45) {
+            return 60;
+        } else if (min > 30) {
+            return 45;
+        } else if (min > 15) {
+            return 30;
+        }
+        return 15;
+    }
+
+    private int getDay(int month, int day) {
+        if (day <= Month.of(month).length(false)) {
+            return day;
+        }
+        return 0;
+    }
+
+    private void getDepartureDate(){
+        boolean goodInputs = false;
+        do {
+            System.out.println("\nDeparture Date MM/DD/YEAR: ");
+            try {
+                String in = input.nextLine();
+                String[] values = in.split("[\\D/]+");
+                int[] results = Arrays.stream(values).mapToInt(Integer::parseInt).toArray();
+                this.setDepartMonth(results[0]);
+                this.setDepartDay(getDay(this.getDepartMonth(), results[1]));
+                this.setDepartYear(results[2]);
+                if (this.getDepartMonth() <= 12 && this.getDepartDay() > 0 && this.getDepartYear() > 2021) {
+                    goodInputs = true;
+                    System.out.println(Month.of(this.getDepartMonth()) +
+                            " " + this.getDepartDay() +
+                            ", " + this.getDepartYear());
+                } else {
+                    System.err.println(in);
+                }
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        } while (!goodInputs);
+
+    }
 
     // Methods
     private void init() {
@@ -167,12 +285,18 @@ public class Boarding_Pass {
         this.setOrigin();
         this.setDestination();
         this.setDepartureTime();
+        this.calculateDistance();
+        this.calcEta();
+        this.dateNF(this.departureDate);
+        this.timeNF(this.departureTime,"Departure");
+        this.timeNF(this.eta,"Arrival");
+        this.storeData();
     }
 
-    public LocalTime calcEta() {
-        // TODO 3. calculate the ETA from distances. The origin,destination, and
-        // departureTime.
-        return this.getEta();
+    public void calcEta() {
+        double timeOfTravel = Math.ceil(this.getDistance()/MPH) ;
+        this.setEta(this.getDepartureTime().plusHours((long) timeOfTravel));
+
     }
 
     public void storeData() {
@@ -186,7 +310,7 @@ public class Boarding_Pass {
         double lon2 = Double.parseDouble((String) this.destination.get("longitude"));
         double earthRadius = 3963.0;// Miles
 
-        this.distance = earthRadius * Math.acos( // convert coordinates to distances
+        this.setDistance (earthRadius * Math.acos( // convert coordinates to distances
                 Math.cos(Math.toRadians(lat1)) *
                 Math.cos(Math.toRadians(lon1)) *
                 Math.cos(Math.toRadians(lat2)) *
@@ -198,7 +322,7 @@ public class Boarding_Pass {
                 Math.sin(Math.toRadians(lon2))
                 +
                 Math.sin(Math.toRadians(lat1)) *
-                Math.sin(Math.toRadians(lat2)) );
+                Math.sin(Math.toRadians(lat2)) ));
     }
 
     public String createBoardingPassNumber() {
@@ -221,14 +345,15 @@ public class Boarding_Pass {
             }
         }
 
-        System.out.println(passNumber);
         return passNumber.toString();
     }
 
-    private int getDay(int month, int day) {
-        if (day <= Month.of(month).length(false)) {
-            return day;
-        }
-        return 0;
+    public void dateNF(LocalDate date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        System.out.println("Date: " + formatter.format(date));
+    }
+    public void timeNF(LocalTime time, String when) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
+        System.out.println(when+" Time: " + formatter.format(time));
     }
 }

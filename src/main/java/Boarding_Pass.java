@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Scanner;
 
 import org.json.simple.JSONObject;
@@ -15,6 +16,7 @@ public class Boarding_Pass {
     private JSONObject destination;
     private LocalTime eta;
     private double distance;
+    private Scanner input = new Scanner(System.in);
 
     Boarding_Pass() {
         init();
@@ -40,27 +42,27 @@ public class Boarding_Pass {
     }
 
     public void setDepartureTime() {
-        /*
-         * Create Methods for Natural Language input for Date and Time
+
+        /* Create Methods for Natural Language input for Date and Time
          * TODO 1. Create a method for date MM/DD/YEAR
          * TODO 2. Create a method for Time N:NN -> AM || PM
          */
 
         System.out.println("Year: ");
-        int year = Integer.parseInt(userInput());
+        int year = Integer.parseInt(input.nextLine());
         System.out.println("Month: ");
-        int month = Integer.parseInt(userInput());
+        int month = Integer.parseInt(input.nextLine());
         int dayOfMonth = 0;
         do {
             System.out.println("Day: ");
-            int day = Integer.parseInt(userInput());
+            int day = Integer.parseInt(input.nextLine());
             dayOfMonth = getDay(month, day);
             System.out.println("YUP");
         } while (dayOfMonth == 0);
         System.out.println("Hour: ");
-        int hourOfDay = Integer.parseInt(userInput());
+        int hourOfDay = Integer.parseInt(input.nextLine());
         System.out.println("Minute: ");
-        int min = Integer.parseInt(userInput());
+        int min = Integer.parseInt(input.nextLine());
         int minute = getMinute(min);
 
         this.setDepartureTime(year, month, dayOfMonth, hourOfDay, minute);
@@ -82,17 +84,18 @@ public class Boarding_Pass {
     }
 
     public void setDestination() {
-        System.out.println("Destination(State): ");
-        String state = userInput();
-
         AirportData apd = null;
-        try {
-            apd = new AirportData(state);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        assert apd != null;
+        String state;
+        do {
+            System.out.println("Destination(State): ");
+            state = input.nextLine();
+            try {
+                apd = new AirportData(state);
+            } catch (IOException e) {
+                input.nextLine();
+                e.printStackTrace();
+            }
+        } while (!Objects.requireNonNull(apd).status);
         this.setDestination(apd.choice());
     }
 
@@ -105,17 +108,19 @@ public class Boarding_Pass {
     }
 
     public void setOrigin() {
-        System.out.println("Origin (State): ");
-        String state = userInput();
-
         AirportData apd = null;
-        try {
-            apd = new AirportData(state);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String state;
+        do {
+            System.out.println("Origin (State): ");
+            state = input.nextLine();
+            try {
+                apd = new AirportData(state);
+            } catch (IOException e) {
+                input.nextLine();
+                e.printStackTrace();
+            }
+        } while (!Objects.requireNonNull(apd).status);
 
-        assert apd != null;
         this.setOrigin(apd.choice());
     }
 
@@ -162,7 +167,6 @@ public class Boarding_Pass {
         this.setOrigin();
         this.setDestination();
         this.setDepartureTime();
-
     }
 
     public LocalTime calcEta() {
@@ -226,11 +230,5 @@ public class Boarding_Pass {
             return day;
         }
         return 0;
-    }
-
-    private String userInput() {
-        try (Scanner input = new Scanner(System.in)) {
-            return input.nextLine();
-        }
     }
 }

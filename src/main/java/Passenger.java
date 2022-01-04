@@ -1,5 +1,3 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -23,7 +21,7 @@ public class Passenger {
     }
 
     public void setName() {
-        System.out.println("What's your name? ");
+        System.out.println("\nWhat's your name? ");
         this.name = input.nextLine();
     }
 
@@ -32,7 +30,7 @@ public class Passenger {
     }
 
     public void setEmail() {
-        System.out.println("What's your email address ? ");
+        System.out.println("\nWhat's your email address ? ");
         this.email = input.nextLine();
     }
 
@@ -41,7 +39,7 @@ public class Passenger {
     }
 
     public void setPhoneNumber() {
-        System.out.println("What is your Phone Number? ");
+        System.out.println("\nWhat is your Phone Number? ");
         this.phoneNumber = Integer.parseInt(input.nextLine());
     }
 
@@ -51,7 +49,7 @@ public class Passenger {
     }
 
     public void setGender() {
-        System.out.println("What is your Gender ? ");
+        System.out.println("\nWhat is your Gender ? ");
         String in = input.nextLine().toUpperCase();
         switch (in) {
             case "M":
@@ -72,7 +70,7 @@ public class Passenger {
     }
 
     public void setAge() {
-        System.out.println("How old are you ? ");
+        System.out.println("\nHow old are you ? ");
         this.setAge(Integer.parseInt(input.nextLine()));
     }
 
@@ -115,32 +113,21 @@ public class Passenger {
         return this.discount;
     }
 
-    /* Methods to Create
-     * TODO 3. Create a method that stores the user data to a file.
-     * */
-    BufferedWriter writer;
+    public DataStore writer = new DataStore();
 
     public void storeData() {
-
+        String fileName = "output/Passenger.txt";
+        boolean append = true;
         try {
-            writer = new BufferedWriter(new FileWriter("Passenger.txt"));
-            writer.append(String.valueOf(this.getName()));
-            writer.newLine();
-            writer.append(String.valueOf(this.getAge()));
-            writer.newLine();
-            writer.append(String.valueOf(this.getEmail()));
-            writer.newLine();
-            writer.append(String.valueOf(this.getGender()));
-            writer.newLine();
-            writer.append(String.valueOf(this.getPhoneNumber()));
-            writer.newLine();
-
-            writer.close();
+            this.writer.writeToAFile(fileName,"Name",String.valueOf(this.getName()),!append);
+            this.writer.writeToAFile(fileName,"AGE",String.valueOf(this.getAge()),append);
+            this.writer.writeToAFile(fileName,"EMAIL",String.valueOf(this.getEmail()),append);
+            this.writer.writeToAFile(fileName,"GENDER",String.valueOf(this.getGender()),append);
+            this.writer.writeToAFile(fileName,"PHONE",String.valueOf(this.getPhoneNumber()),append);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 
     public void init() {
         this.setName();

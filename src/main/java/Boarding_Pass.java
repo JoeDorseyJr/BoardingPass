@@ -314,14 +314,15 @@ public class Boarding_Pass {
     public void storeData() throws IOException {
         DataStore data = new DataStore();
         Boolean append = true;
+        String fileName = "output/BoardingPass.txt";
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("hh:mm a");
-        data.writeToAFile("BoardingPass.txt","Boarding Pass Number",this.boardingPassNumber,!append);
-        data.writeToAFile("BoardingPass.txt","Departure Date", this.departureDate.format(dateFormat),append);
-        data.writeToAFile("BoardingPass.txt","Departure Time", this.getDepartureTime().format(timeFormat),append);
-        data.writeToAFile("BoardingPass.txt","Arrival Time", this.getEta().format(timeFormat),append);
-        data.writeToAFile("BoardingPass.txt","Origin", this.origin.get("iata").toString()+ " - " + this.origin.get("name").toString(),append);
-        data.writeToAFile("BoardingPass.txt","Destination", this.destination.get("iata").toString()+ " - " + this.destination.get("name").toString(),append);
+        data.writeToAFile(fileName,"Boarding Pass Number",this.boardingPassNumber,!append);
+        data.writeToAFile(fileName,"Departure Date", this.departureDate.format(dateFormat),append);
+        data.writeToAFile(fileName,"Departure Time", this.getDepartureTime().format(timeFormat),append);
+        data.writeToAFile(fileName,"Arrival Time", this.getEta().format(timeFormat),append);
+        data.writeToAFile(fileName,"Origin", this.origin.get("iata").toString()+ " - " + this.origin.get("name").toString(),append);
+        data.writeToAFile(fileName,"Destination", this.destination.get("iata").toString()+ " - " + this.destination.get("name").toString(),append);
 
     }
 

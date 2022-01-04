@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 
 public class Ticket {
@@ -8,5 +9,16 @@ public class Ticket {
 
     Ticket() throws IOException {
         new Boarding_Pass();
+        Passenger p = new Passenger();
+
+    }
+
+    private void readFile(String fileName){
+        File file = new File(fileName);
+
+    }
+
+    private void calcPrice(){
+
     }
 }

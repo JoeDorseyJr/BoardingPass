@@ -7,8 +7,6 @@ import java.util.*;
 
 import org.json.simple.JSONObject;
 
-import javax.xml.crypto.Data;
-
 /*
  * ASSUMPTIONS: There are few assumptions made to complete the next few
  * calculations.
@@ -17,8 +15,8 @@ import javax.xml.crypto.Data;
  * 2. Every flight is full so the fuel efficiency will be calculated
  * accordingly. (To determine price possibly)
  * 3. A 747 transporting 500 people one-mile uses five gallons of fuel. That
- * means the plane is burning 0.01 gallons per person per mile.
- * 4. The plane travels at 550 mph (900 km/h).
+ * means the plane is burning 0.01 gallons per person per mile. (anecdotal information)
+ * 4. The plane travels at an average of 550 mph (900 km/h).
  */
 
 public class Boarding_Pass {
@@ -33,6 +31,7 @@ public class Boarding_Pass {
     private JSONObject origin;
     private JSONObject destination;
     private double distance;
+    private double travelTime;
     private int departMonth;
     private int departYear;
     private int departDay;
@@ -138,7 +137,7 @@ public class Boarding_Pass {
         AirportData apd = null;
         String state;
         do {
-            System.out.println("\nOrigin (US): ");
+            System.out.println("\nFlying From (US): ");
             state = input.nextLine();
             try {
                 apd = new AirportData(state);
@@ -312,15 +311,15 @@ public class Boarding_Pass {
     }
 
     public void calcEta() {
-        double timeOfTravel = this.getDistance()/MPH*60;
-        double mins = timeOfTravel;
+        this.travelTime = this.getDistance()/MPH*60;
+        double mins = this.travelTime;
         int hours = 0;
         while (mins > 60){
             hours++;
             mins-= 60;
         }
         System.out.println("\nTime in flight: "+ hours +"h "+ (int)Math.round(mins) + "m");
-        this.setEta(this.getDepartureTime().plusMinutes((long) timeOfTravel));
+        this.setEta(this.getDepartureTime().plusMinutes((long) this.travelTime));
 
     }
 
@@ -328,13 +327,13 @@ public class Boarding_Pass {
         String fileName = "output/BoardingPass.txt";
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("hh:mm a");
-        data.writeToAFile(fileName,"Boarding Pass Number",this.boardingPassNumber,!append);
-        data.writeToAFile(fileName,"Departure Date", this.departureDate.format(dateFormat),append);
-        data.writeToAFile(fileName,"Departure Time", this.getDepartureTime().format(timeFormat),append);
-        data.writeToAFile(fileName,"Arrival Time", this.getEta().format(timeFormat),append);
+        data.writeToAFile(fileName,"Boarding_Pass_Number",this.boardingPassNumber,!append);
+        data.writeToAFile(fileName,"Departure_Date", this.departureDate.format(dateFormat),append);
+        data.writeToAFile(fileName,"Departure_Time", this.getDepartureTime().format(timeFormat),append);
+        data.writeToAFile(fileName,"Arrival_Time", this.getEta().format(timeFormat),append);
         data.writeToAFile(fileName,"Origin", this.origin.get("iata").toString()+ " - " + this.origin.get("name").toString(),append);
         data.writeToAFile(fileName,"Destination", this.destination.get("iata").toString()+ " - " + this.destination.get("name").toString(),append);
-
+        data.writeToAFile(fileName,"Total_Miles", String.valueOf(this.distance),append);
     }
 
     private void calculateDistance() {
@@ -386,6 +385,7 @@ public class Boarding_Pass {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         System.out.println(what+" Date: " + formatter.format(date));
     }
+
     public void timeNF(LocalTime time, String when) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
         System.out.println(when+" Time: " + formatter.format(time));

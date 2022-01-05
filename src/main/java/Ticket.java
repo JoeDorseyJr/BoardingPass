@@ -1,16 +1,8 @@
-import javax.swing.plaf.basic.BasicScrollPaneUI;
 import java.io.*;
 import java.util.Formatter;
 import java.util.HashMap;
-import java.util.Locale;
-import java.util.Objects;
 
 public class Ticket {
-    //This class will call the other classes and glue all the other information together.
-    //TODO 1. Grab Stored the passenger info
-    //TODO 2. Establish a multiplier for flight price.
-    //TODO 3. Output a ticket price.
-
     /*
      * ASSUMPTIONS: There are few assumptions made to complete the next few
      * calculations.
@@ -24,11 +16,11 @@ public class Ticket {
      * 5. TAXES and FEE - https://www.airlines.org/dataset/government-imposed-taxes-on-air-transportation/
      *
      */
-    private final double BASE_AIRFARE$ = 50.00;
+    private final double BASE_AIRFARE$ = 15.00;
     private final double FEDERAL_TAX = .075;
-    private final double LUGGAGE = 25.00;
+    private final double LUGGAGE$ = 10.00;
     private final double FLIGHT_SEGMENT_TAX$ = 4.50;
-    private final double SEPT911 = 5.60;
+    private final double SEPT911$ = 5.60;
 
     private double gpm = 0.01;
     private double avgFuelPrice = 5.24;
@@ -37,10 +29,11 @@ public class Ticket {
     private DataStore data = new DataStore();
 
     Ticket() throws IOException {
-//        new Passenger();
-//        new Boarding_Pass();
-       fetch = readFile("output/BoardingPass.txt");
-       fetch.putAll(readFile("output/Passenger.txt"));
+        new Passenger();
+        new Boarding_Pass();
+
+        fetch.putAll(readFile("output/BoardingPass.txt"));
+        fetch.putAll(readFile("output/Passenger.txt"));
         this.setPrice(this.calcPrice(Double.parseDouble(fetch.get("Total_Miles")),Double.parseDouble(fetch.get("DISCOUNT"))));
         this.storeData();
         this.output();
@@ -72,7 +65,6 @@ public class Ticket {
         return this.price;
     }
 
-
 // Methods
     private HashMap<String,String> readFile(String fileName) throws IOException {
         File file = new File(fileName);
@@ -89,7 +81,7 @@ public class Ticket {
     }
 
     private double calcPrice (double miles, double discount){
-        this.setPrice(((gpm*miles*avgFuelPrice)+BASE_AIRFARE$+LUGGAGE)*(1+FEDERAL_TAX)+FLIGHT_SEGMENT_TAX$+ SEPT911);
+        this.setPrice(((gpm*miles*avgFuelPrice)+BASE_AIRFARE$+ LUGGAGE$)*(1+FEDERAL_TAX)+FLIGHT_SEGMENT_TAX$+ SEPT911$);
         this.setPrice(this.getPrice()-this.getPrice()*discount);
 
         Formatter cost = new Formatter();
@@ -102,7 +94,7 @@ public class Ticket {
         boolean append = true;
         String fileName = "output/Ticket.txt";
         try {
-            data.writeToAFile(fileName,("Ticket_Price").toUpperCase(),"$ "+String.valueOf(this.getPrice()),!append);
+            data.writeToAFile(fileName,("Ticket_Price").toUpperCase(),"$ "+ this.getPrice(),!append);
             fetch.forEach((k,v) -> {
                 try {
                     data.writeToAFile(fileName,k.toUpperCase(),v.toUpperCase(),append);
@@ -131,7 +123,5 @@ public class Ticket {
         System.out.print("Arrival Time:"+fetch.get("Arrival_Time"));
         System.out.println("\t\t\t\tTicket Price: $"+this.getPrice()+"\n");
         for(int i=0; i<70;i++){System.out.print("*");}
-
-
     }
 }

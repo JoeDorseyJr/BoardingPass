@@ -4,13 +4,13 @@ import java.util.Scanner;
 public class Passenger {
     private String name;
     private String email;
-    private int phoneNumber;
     private String gender;
+    private int phoneNumber;
     private int age;
     private double discount = 0.0;
     private Scanner input = new Scanner(System.in);
+    public  DataStore writer = new DataStore();
 
-    // TODO 1. Create a Constructor that take in user's info.
     Passenger() {
         init();
     }
@@ -70,6 +70,7 @@ public class Passenger {
     }
 
     public void setAge() {
+        // TODO UPDATE: create a date method to take in D.O.B. vs age explicitly.
         System.out.println("\nHow old are you ? ");
         this.setAge(Integer.parseInt(input.nextLine()));
     }
@@ -86,6 +87,10 @@ public class Passenger {
         if (gender.equalsIgnoreCase("female") || gender.equalsIgnoreCase("f")) {
             this.discount += .25;
         }
+    }
+
+    public void setDiscount(double discount) {
+        this.discount = discount;
     }
 
     // Getters
@@ -113,17 +118,18 @@ public class Passenger {
         return this.discount;
     }
 
-    public DataStore writer = new DataStore();
+    // Methods
 
     public void storeData() {
         String fileName = "output/Passenger.txt";
         boolean append = true;
         try {
-            this.writer.writeToAFile(fileName,"Name",String.valueOf(this.getName()),!append);
+            this.writer.writeToAFile(fileName,"NAME",String.valueOf(this.getName()).toUpperCase(),!append);
             this.writer.writeToAFile(fileName,"AGE",String.valueOf(this.getAge()),append);
-            this.writer.writeToAFile(fileName,"EMAIL",String.valueOf(this.getEmail()),append);
+            this.writer.writeToAFile(fileName,"EMAIL",String.valueOf(this.getEmail()).toUpperCase(),append);
             this.writer.writeToAFile(fileName,"GENDER",String.valueOf(this.getGender()),append);
             this.writer.writeToAFile(fileName,"PHONE",String.valueOf(this.getPhoneNumber()),append);
+            this.writer.writeToAFile(fileName,"DISCOUNT",String.valueOf(this.getDiscount()),append);
         } catch (IOException e) {
             e.printStackTrace();
         }

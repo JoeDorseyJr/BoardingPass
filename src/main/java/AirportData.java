@@ -4,7 +4,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import javax.swing.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,14 +21,13 @@ public class AirportData implements AccessKeys {
     private Scanner input = new Scanner(System.in);
     public Boolean status;
     final int[] fileAppend = {0};
-    String location;
+    private String location;
+    private String site;
 
     public AirportData(String area) throws IOException {
-
         this.location = cleanseLocation(area).toUpperCase();// removes any Non-letters and replaces spaces with %20
-
-        URL url = new URL(
-                "https://www.air-port-codes.com/api/v1/multi?term=" + this.location + "&limit=5&size=3&countries=US");
+        site = "https://www.air-port-codes.com/api/v1/multi?term=" + this.location + "&limit=5&size=3&countries=US";
+        URL url = new URL(site);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Content-Type", "application/json");
@@ -52,7 +51,6 @@ public class AirportData implements AccessKeys {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
     }
 
     public String cleanseLocation(String location) {
@@ -86,9 +84,9 @@ public class AirportData implements AccessKeys {
                 fileAppend[0]++;
                 try {
                     if (!(fileAppend[0] > 1) == append) {
-                        data.writeToAFile("output/" + this.location.replace("%20", "") + "_Airports.json", "[{\"airports\"", x.toString()+"},", ((fileAppend[0] > 1) == append));
+                        data.writeToAJSON("output/" + this.location.replace("%20", "") + "_Airports.json", "[{\"airport\" : ", x.toString()+"},", ((fileAppend[0] > 1) == append));
                     } else {
-                        data.writeToAFile("output/" + this.location.replace("%20", "") + "_Airports.json", "{\"airports\"", x.toString()+"},", ((fileAppend[0] > 1) == append));
+                        data.writeToAJSON("output/" + this.location.replace("%20", "") + "_Airports.json", "{\"airport\" : ", x.toString()+"},", ((fileAppend[0] > 1) == append));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -101,15 +99,11 @@ public class AirportData implements AccessKeys {
 
     public JSONObject choice() {
         String name;
-
         do {
             System.out.println("\nPlease select an airport (Airport Code): ");
             airport.forEach((k, v) -> System.out.println(k + " - " + v.get("name").toString()));
             name = input.nextLine().toUpperCase();
         } while (!airport.containsKey(name));
-
         return airport.get(name);
     }
-
-
 }

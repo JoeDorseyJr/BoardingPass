@@ -8,14 +8,12 @@ public class Ticket {
     //TODO 3. Output a ticket price.
 
     Ticket() throws IOException {
-        new Boarding_Pass();
         Passenger p = new Passenger();
-
+        new Boarding_Pass();
     }
 
     private void readFile(String fileName){
         File file = new File(fileName);
-
     }
 
     private void calcPrice(){

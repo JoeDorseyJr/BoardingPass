@@ -38,6 +38,8 @@ public class Boarding_Pass {
     private int departDay;
     private int departHour;
     private int departMinute;
+    private DataStore data = new DataStore();
+    private Boolean append = true;
 
     // Constructors
     Boarding_Pass() throws IOException {
@@ -116,6 +118,12 @@ public class Boarding_Pass {
             }
         } while (!Objects.requireNonNull(apd).status);
         this.setDestination(apd.choice());
+        try {
+            data.writeToAJSON("output/"+apd.cleanseLocation(state).replace("%20","").toUpperCase()+"_Airports.json","{\"purpose\":\"destination\"}","]",true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void setEta(LocalTime eta) {
@@ -140,6 +148,11 @@ public class Boarding_Pass {
         } while (!Objects.requireNonNull(apd).status);
 
         this.setOrigin(apd.choice());
+        try {
+            data.writeToAJSON("output/"+apd.cleanseLocation(state).replace("%20","").toUpperCase()+"_Airports.json","{\"purpose\" : \"origin\"}","]",true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // Getters
@@ -312,8 +325,6 @@ public class Boarding_Pass {
     }
 
     public void storeData() throws IOException {
-        DataStore data = new DataStore();
-        Boolean append = true;
         String fileName = "output/BoardingPass.txt";
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("hh:mm a");
